@@ -2,8 +2,6 @@ import React, {useState} from 'react';
 import TagsInput from 'react-tagsinput';
 import 'react-tagsinput/react-tagsinput.css';
 import Dropzone from 'react-dropzone'
-
-
 const CreateProduct = (props) => {
 
     const [productVariantPrices, setProductVariantPrices] = useState([])
@@ -78,6 +76,7 @@ const CreateProduct = (props) => {
     let saveProduct = (event) => {
         event.preventDefault();
         // TODO : write your code here to save the product
+
     }
 
 
@@ -200,8 +199,8 @@ const CreateProduct = (props) => {
                                             productVariantPrices.map((productVariantPrice, index) => {
                                                 return (
                                                     <tr key={index}>
-                                                        <td>{productVariantPrice.title}</td>
-                                                        <td><input className="form-control" type="text"/></td>
+                                                        <td>{productVariantPrice.variant_title}</td>
+                                                        <td><input className="form-control" type="text"/>{productVariantPrice.price}</td>
                                                         <td><input className="form-control" type="text"/></td>
                                                     </tr>
                                                 )

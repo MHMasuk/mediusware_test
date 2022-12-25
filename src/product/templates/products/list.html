@@ -8,16 +8,18 @@
         <h1 class="h3 mb-0 text-gray-800">Products</h1>
     </div>
 
-
     <div class="card">
         <form action="" method="get" class="card-header">
             <div class="form-row justify-content-between">
                 <div class="col-md-2">
-                    <input type="text" name="title" placeholder="Product Title" class="form-control">
+                    <input type="text" name="product__title__icontains" placeholder="Product Title" class="form-control">
                 </div>
                 <div class="col-md-2">
                     <select name="variant" id="" class="form-control">
                         <option selected disabled>--Select A Variant--</option>
+                        {% for product_variant in product_variant_list %}
+                            <option key="{{ product_variant.variant_title }}">{{ product_variant.variant_title }}</option>
+                        {% endfor %}
 
                     </select>
                 </div>
@@ -33,7 +35,7 @@
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <input type="date" name="date" placeholder="Date" class="form-control">
+                    <input type="date" name="created_at" placeholder="Date" class="form-control">
                 </div>
                 <div class="col-md-1">
                     <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
@@ -41,7 +43,12 @@
             </div>
         </form>
 
+
+
         <div class="card-body">
+            {% for data in data_list %}
+            <p>{{ data.Size }}</p>
+            {% endfor %}
             <div class="table-response">
                 <table class="table">
                     <thead>
@@ -55,46 +62,38 @@
                     </thead>
 
                     <tbody>
+                    {% for product in productvariantprice_list %}
                     <tr>
-                        <td>1</td>
-                        <td>T-Shirt <br> Created at : 25-Aug-2020</td>
-                        <td>Quality product in low cost</td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ product.product.title }}</td>
+                        <td>{{ product.product.description }}</td>
                         <td>
                             <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
                                 <dt class="col-sm-3 pb-0">
-                                    XL/ Black/ Full
+                                    {{ product.product_variant_one.variant_title }}
                                 </dt>
                                 <dd class="col-sm-9">
                                     <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
+                                        <dd class="col-sm-4 pb-0">Price : {{ product.price }}</dd>
+                                        <dd class="col-sm-8 pb-0">InStock : {{ product.stock }}</dd>
                                     </dl>
                                 </dd>
                                 <dt class="col-sm-3 pb-0">
-                                    XL/ Black/ Half
+                                    {{ product.product_variant_two.variant_title }}
                                 </dt>
                                 <dd class="col-sm-9">
                                     <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
+                                        <dd class="col-sm-4 pb-0">Price : {{ product.price }}</dd>
+                                        <dd class="col-sm-8 pb-0">InStock : {{ product.stock }}</dd>
                                     </dl>
                                 </dd>
                                 <dt class="col-sm-3 pb-0">
-                                    L/ Black/ Full
+                                   {{ product.product_variant_three.variant_title }}
                                 </dt>
                                 <dd class="col-sm-9">
                                     <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                                <dt class="col-sm-3 pb-0">
-                                    L/ Black/ Half
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
+                                        <dd class="col-sm-4 pb-0">Price : {{ product.price }}</dd>
+                                        <dd class="col-sm-8 pb-0">InStock : {{ product.stock }}</dd>
                                     </dl>
                                 </dd>
                             </dl>
@@ -103,10 +102,12 @@
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="" class="btn btn-success">Edit</a>
+                                <a href="{% url 'product:edit.product' product.pk %}" class="btn btn-success">Edit</a>
                             </div>
                         </td>
                     </tr>
+                    {% endfor %}
+
                     </tbody>
 
                 </table>
@@ -117,9 +118,30 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-                    <p>Showing 1 to 10 out of 100</p>
+                    <p>Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} out of {{ page_obj.paginator.count }}</p>
                 </div>
                 <div class="col-md-2">
+                    {% if is_paginated %}
+                      <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                        {% else %}
+                          <li class="disabled page-item"><span class="page-link">&laquo;</span></li>
+                        {% endif %}
+                        {% for i in paginator.page_range %}
+                          {% if page_obj.number == i %}
+                            <li class="active page-item"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+                          {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                          {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                        {% else %}
+                          <li class="disabled"><span>&raquo;</span></li>
+                        {% endif %}
+                      </ul>
+                    {% endif %}
 
                 </div>
             </div>
